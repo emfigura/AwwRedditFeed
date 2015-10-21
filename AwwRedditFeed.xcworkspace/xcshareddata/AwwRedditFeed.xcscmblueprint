@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "3CF231D0CE795B5BC8CB29EB8D0EDB88A19B6773",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "CA9113071C1430E461024E055BF694AA0656A45B" : 0,
+    "3CF231D0CE795B5BC8CB29EB8D0EDB88A19B6773" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "3178939A-9A16-491A-B2D7-A3878BE6CCE4",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "CA9113071C1430E461024E055BF694AA0656A45B" : "",
+    "3CF231D0CE795B5BC8CB29EB8D0EDB88A19B6773" : "AwwRedditFeed\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "AwwRedditFeed",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "AwwRedditFeed.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/silverscope\/AwwRedditFeed.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "3CF231D0CE795B5BC8CB29EB8D0EDB88A19B6773"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/silverscope\/KoalaNaughtSK.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CA9113071C1430E461024E055BF694AA0656A45B"
+    }
+  ]
+}
