@@ -15,4 +15,5 @@ struct AwwServiceModel {
     var created: Double
     var score: Int
     var name: String
+    var shareURL: String
 }

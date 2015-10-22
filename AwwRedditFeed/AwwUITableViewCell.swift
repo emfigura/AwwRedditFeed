@@ -14,18 +14,20 @@ class AwwUITableViewCell: UITableViewCell {
     @IBOutlet private weak var authorLabel: UILabel!
     @IBOutlet private weak var timeLabel: UILabel!
     @IBOutlet private weak var scoreLabel: UILabel!
-    var imageUrl: String!
+    var cellIndex: Int!
     
-    func configureCell(title: String, author: String, time: Double, score: Int, imageUrl: String) {
+    func configureCell(title: String, author: String, time: Double, score: Int, index: Int) {
         titleLabel.text = title
         authorLabel.text = author
+        
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = NSDate(timeIntervalSince1970: time)
         let timeAsString = dateFormatter.stringFromDate(date)
+        
         timeLabel.text = timeAsString
         scoreLabel.text = String(score)
-        self.imageUrl = imageUrl
+        cellIndex = index
     }
     
     
