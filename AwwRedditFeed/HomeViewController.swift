@@ -14,25 +14,56 @@ class HomeViewController: UIViewController, AwwServiceDelegate, UITableViewDeleg
     private var models: [AwwServiceModel] = []
     private var imageCache = NSCache()
     private var isLoading = false
+    private var refreshControl:UIRefreshControl!
+    private var isRefreshing = false
     
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var tableview: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         service.delegate = self
-        tableview.rowHeight = UITableViewAutomaticDimension
-        tableview.estimatedRowHeight = 104
+        
+        //Initial service call
         getMoreData()
         activityIndicator.startAnimating()
+        
+        tableview.rowHeight = UITableViewAutomaticDimension
+        tableview.estimatedRowHeight = 104
         tableview.hidden = true
+        
+        //Creates the pull to refresh
+        refreshControl = UIRefreshControl()
+        refreshControl.tintColor = UIColor(red: 51/255, green: 102/255, blue: 153/255, alpha: 1)
+        refreshControl.attributedTitle = NSAttributedString(string: "Refresh the AWW!")
+        refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        tableview.addSubview(refreshControl)
+        
     }
     
     func awwServiceSuccess(models: [AwwServiceModel]) {
-        activityIndicator.stopAnimating()
-        activityIndicator.hidden = true
-        tableview.hidden = false
-        self.models += models
+        
+        //If the tableview is hidden (first successful call) then we want to show it and hide
+        //the indicatior
+        if tableview.hidden {
+            activityIndicator.stopAnimating()
+            activityIndicator.hidden = true
+            tableview.hidden = false
+        }
+        
+        //If we are refreshing
+        if isRefreshing {
+            //We want to clear out the models and hide the refresh control
+            self.models = models
+            isRefreshing = false
+            refreshControl.endRefreshing()
+        } else {
+            //Else just append the models
+            self.models += models
+        }
+        
         self.tableview.reloadData()
         isLoading = false
     }
@@ -40,30 +71,42 @@ class HomeViewController: UIViewController, AwwServiceDelegate, UITableViewDeleg
     func awwServiceFailure() {
         activityIndicator.stopAnimating()
         activityIndicator.hidden = true
-        let alertController = UIAlertController(title: "Error!", message:
-            "Something went wrong in the service!", preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default,handler: nil))
+        self.displayError("Error", message: "Something went wrong in the service!")
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        if isRefreshing {
+            isRefreshing = false
+            refreshControl.endRefreshing()
+        }
+        
+        
         isLoading = false
     }
     
-    func getMoreData() {
+    private func getMoreData() {
         isLoading = true
-        service.getData("30", lastName: models.last?.name)
+        if isRefreshing {
+            service.getData("30", lastName: nil)
+        } else {
+            service.getData("30", lastName: models.last?.name)
+        }
+    }
+    
+    func refresh(sender:AnyObject) {
+        isRefreshing = true
+        getMoreData()
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        
-        if indexPath.row > models.count - 10 && !isLoading {
+        //If we are close to the bottom of the table we want to make another service call for infinite scroll
+        if indexPath.row > models.count - 10 && !isLoading && !isLoading {
             getMoreData()
         }
         
         let cell = tableview.dequeueReusableCellWithIdentifier("AwwTableViewCell", forIndexPath: indexPath) as! AwwUITableViewCell
         let model = models[indexPath.row]
         
-        cell.configureCell(model.title, author: model.author, time: model.created, score: model.score, imageUrl: model.imageURL)
+        cell.configureCell(model.title, author: model.author, time: model.created, score: model.score, index: indexPath.row)
         cell.selectionStyle = .None
         
         return cell
@@ -74,10 +117,10 @@ class HomeViewController: UIViewController, AwwServiceDelegate, UITableViewDeleg
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
-        
-        // Create a new variable to store the instance of PlayerTableViewController
         if let destinationVC = segue.destinationViewController as? DetailsViewController, cell = sender as? AwwUITableViewCell {
-            destinationVC.url = cell.imageUrl
+            destinationVC.imageUrl = models[cell.cellIndex].imageURL
+            destinationVC.shareUrl = models[cell.cellIndex].shareURL
+            destinationVC.pageTitle = models[cell.cellIndex].title
         }
     }
 

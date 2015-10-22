@@ -20,7 +20,14 @@ class AwwService {
     
     weak var delegate: AwwServiceDelegate?
     
+    /**
+    The call to retrieve data
+    
+    - parameter limit:    The amount of data to retrieve
+    - parameter lastName: The name of the last item retrieve. Used for Pagination.
+    */
     func getData(limit: String, lastName: String?) {
+        //Creates the url and sets the limit
         var url = "https://www.reddit.com/r/aww/.json?limit=\(limit)"
         if let lastName = lastName {
             url += "&after=\(lastName)"
@@ -38,7 +45,7 @@ class AwwService {
     
     }
     
-    
+    //See json response at https://www.reddit.com/r/aww/.json
     private func awwServiceJsonParser(initialJson: JSON) -> [AwwServiceModel] {
         
         var models:[AwwServiceModel] = []
@@ -52,15 +59,20 @@ class AwwService {
             let preview = dataForChild["preview"].dictionary
             let score = dataForChild["score"].int
             let name = dataForChild["name"].string
+            let shareURL = dataForChild["url"].string
             var imageURL: String? = nil
             if let preview = preview, images = preview["images"]?.array, firstImage = images.first {
                 imageURL = firstImage["source"]["url"].string
                 print(imageURL)
             }
-            
-            if let author = author, title = title,imageURL = imageURL, createdDate = createdDate, score = score, name = name {
+            if let author = author,
+                   title = title,
+                   imageURL = imageURL,
+                   createdDate = createdDate,
+                   score = score, name = name,
+                   shareURL = shareURL {
                 
-                models.append(AwwServiceModel(author: author,imageURL: imageURL, title: title, created: createdDate, score: score, name: name))
+                models.append(AwwServiceModel(author: author,imageURL: imageURL, title: title, created: createdDate, score: score, name: name, shareURL: shareURL))
             }
             
         }

@@ -12,33 +12,51 @@ import Alamofire
 class DetailsViewController: UIViewController {
 
     @IBOutlet private weak var imageView: UIImageView!
-    var url: String!
+    @IBOutlet private weak var imageTitle: UILabel!
+    var imageUrl: String?
+    var shareUrl: String?
+    var pageTitle: String?
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         activityIndicator.startAnimating()
-        Alamofire.request(.GET, url).response { (request, response, data, error) -> Void in
-            self.activityIndicator.stopAnimating()
-            if error != nil {
-                let alertController = UIAlertController(title: "Error!", message:
-                    "Something went wrong in the service!", preferredStyle: UIAlertControllerStyle.Alert)
-                alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default,handler: nil))
-                
-                self.presentViewController(alertController, animated: true, completion: nil)
-                
-            } else {
-                if let data = data, image = UIImage(data: data) {
-                    self.imageView.image = image
+        
+        if let pageTitle = pageTitle {
+            imageTitle.text = pageTitle
+        } else {
+            imageTitle.text = "Awww"
+        }
+        
+        if let imageUrl = imageUrl {
+            Alamofire.request(.GET, imageUrl).response { (request, response, data, error) -> Void in
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.hidden = true
+                if error != nil {
+                    self.displayError("Error", message: "Something went wrong in the service!")
+                } else {
+                    if let data = data, image = UIImage(data: data) {
+                        self.imageView.image = image
+                    } else {
+                        self.displayError("Error", message: "The service didn't return an image!")
+                    }
                 }
             }
+        } else {
+            self.displayError("Error", message: "The image url isn't correct!")
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.hidden = true
         }
         
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction private func shareButtonTapped(sender: AnyObject) {
+        if let shareUrl = shareUrl, shareUrlAsURL = NSURL(string: shareUrl) {
+            let activityViewController = UIActivityViewController(activityItems: ["Look what I found on /r/aww!", shareUrlAsURL], applicationActivities: nil)
+            activityViewController.excludedActivityTypes = [UIActivityTypeAirDrop]
+            self.presentViewController(activityViewController, animated: true) {}
+        }
+        
     }
-
 }
